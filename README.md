@@ -1,11 +1,13 @@
 
-# Knifer: Deciphering with neural language model.
+# Knifer: Deciphering with a neural language model
 
 This code using a neural language model, along with beam search, to decipher text.
 
 ## Getting started
 
-The script run.endtoend creates train/test data, builds an LM, and deciphers a text. It takes about 10 minutes to run.
+The script run.endtoend creates train/test data, builds an LM, and deciphers a text. 
+
+It takes about 10 minutes to run.
 
 ## Programs and scripts
 
@@ -63,19 +65,19 @@ python beam_subst15.py charsmall.pt test-data/test.ct.goodnews.txt \
 Usage (with crib prefix):
 
 ```
---prefix  Crib plaintext for initial part, to help decipherment.
+--prefix "string"     Crib plaintext for initial part, to help decipherment.
 ```
 
 Usage (with prompt):
 
 ```
---prompt  Warms up language model before scoring plaintext candidates.
+--prompt "string"     Warms up language model before scoring plaintext candidates.
 ```
 
 Usage (with plaintext for beam):
 
 ```
---pt      Reports position where true plaintext falls off the beam.
+--pt "string"         Reports position where true plaintext falls off the beam.
 ```
 
 ### score4_lstm.py 
