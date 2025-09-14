@@ -19,7 +19,7 @@ Creates a small LSTM LM. Needs access to data directory ../knifer-data.
 
 Creates a large LSTM LM. Needs access to data directory ../knifer-data.
 
-### lstm5.py 
+### lstm.py 
 
 Trains an LSTM LM
 
@@ -49,7 +49,7 @@ python lstm5.py --train train.char.txt --test test.char.txt \
   --save char27_best_resumed.pt --save_dir ckpts2 --save_every 1 --full_ckpt
 ```
 
-### beam_subst<version>.py 
+### beam_subst.py 
 
 Deciphers a ciphertext string.
 
@@ -80,7 +80,7 @@ Usage (with plaintext for beam):
 --pt "string"         Reports position where true plaintext falls off the beam.
 ```
 
-### score4_lstm.py 
+### score_lstm.py 
 
 Scores a plaintext.
 
