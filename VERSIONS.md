@@ -1,5 +1,5 @@
 
-# Version notes for programs.
+# Version notes
 
 ## LSTM (LM building)
 
