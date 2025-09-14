@@ -374,10 +374,14 @@ def main():
 
         print(f"epoch {e:02d}  TRAIN bpc={tbpc:.4f} ppl={tppl:.3f}   TEST bpc={ebpc:.4f} ppl={eppl:.3f}   [{dt:.1f}s]")
 
-        # Save best (state_dict only)
+        # Save best (state_dict + alphabet + priors)
         if ebpc < best_test_bpc:
             best_test_bpc = ebpc
-            torch.save(model.state_dict(), args.save)
+            torch.save({
+                'model': model.state_dict(),
+                'vocab': alphabet,
+                'char_priors': char_priors
+            }, args.save)
             print(f"Best TEST bpc: {best_test_bpc:.4f}  (saved to {args.save})")
 
         # Periodic full checkpoint
