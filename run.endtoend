@@ -15,7 +15,7 @@ echo '========================'
 echo '=== Building LM (5min)'
 echo '========================'
 
-python lstm5.py \
+python lstm6.py \
   --train train-data/train.small.char.txt --test test-data/test.small.char.txt \
   --epochs 5 --alphabet "#abcdefghijklmnopqrstuvwxyz" \
   --emb 512 --hidden 512 --layers 3 --block 512 --bsz 64 \
@@ -28,8 +28,14 @@ echo '========================'
 
 echo 'ciphertext =' `cat test-data/test.ct.goodnews.txt`
 
-python beam_subst15.py charsmall.pt test-data/test.ct.goodnews.txt \
+python beam_subst16.py charsmall.pt test-data/test.ct.goodnews.txt \
   --beam 20000 --nbest 20 \
   --topk 26 --alpha 0.00 --gumbel 0.05 --prior_w 0.0 --refine 1 \
   --dtype bf16
+
+echo '========================'
+echo '=== Scoring'
+echo '========================'
+
+python score5.py charsmall.pt test-data/test.pt.goodnews.txt
 
