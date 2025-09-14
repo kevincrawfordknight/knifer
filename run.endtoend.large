@@ -1,0 +1,44 @@
+
+# This script creates train/test plaintext data for English, builds
+# an LSTM character-based LM, and deciphers a ciphertext with it.
+#
+# Data resides outside this GitHub (../knifer-data), so currently
+# this script comments out the make-data part, as it's already made.
+
+echo '========================'
+echo '=== Making data'
+echo '========================'
+
+#./makedata-large
+
+echo '========================'
+echo '=== Building LM '
+echo '========================'
+
+time python lstm6.py \
+  --train ../knifer-data/train.char.txt --test ../knifer-data/test.char.txt \
+  --epochs 5 \
+  --emb 512 --hidden 512 --layers 3 --block 512 --bsz 64 \
+  --lr 2e-3 --wd 0.01 --dropin 0.2 --droph 0.2 --dropout 0.2 \
+  --save charlarge.pt # --save_dir ckpts.small --save_every 2 --full_ckpt
+
+echo '========================'
+echo '=== Deciphering '
+echo '========================'
+
+echo 'ciphertext =' `cat test-data/test.ct.goodnews.txt`
+
+time python beam_subst16.py charlarge.pt test-data/test.ct.goodnews.txt \
+  --beam 20000 --nbest 20 \
+  --topk 26 --alpha 0.00 --gumbel 0.05 --prior_w 0.0 --refine 1 \
+  --dtype bf16
+
+echo '========================'
+echo '=== Scoring'
+echo '========================'
+
+'scoring with small LM'
+time python score5.py charsmall.pt test-data/test.pt.goodnews.txt
+'scoring with large LM'
+time python score5.py charlarge.pt test-data/test.pt.goodnews.txt
+

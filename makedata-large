@@ -14,19 +14,19 @@ TESTEMPIRERAW=$DATADIR/test.empire.raw.txt
 TRAIN1=$DATADIR/CC-MAIN-2024-18/000_00001.jsonl.zst
 TRAIN2=$DATADIR/CC-MAIN-2024-18/000_00002.jsonl.zst
 TRAINPILE=$DATADIR/pile-small/train.large.char.txt
-TRAINZODIACRAW=$DATADIR/train.zodiac.raw
+TRAINZODIACRAW=$DATADIR/train.zodiac.raw.txt
 
-echo 'processing train set '$TRAIN1
+#echo 'processing train set '$TRAIN1
+#
+#zstd -d --stdout $TRAIN1 |
+#python cleandata.py | 
+#sed 's/./& /g' | sed 's/^/# /' | sed 's/ *$/ #/' > $DATADIR/train.char.txt
 
-zstd -d --stdout $TRAIN1 |
-python cleandata.py | 
-sed 's/./& /g' | sed 's/^/# /' | sed 's/ *$/ #/' > $DATADIR/train.char.txt
-
-echo 'processing train set '$TRAIN2
-
-zstd -d --stdout $TRAIN2 |
-python cleandata.py | 
-sed 's/./& /g' | sed 's/^/# /' | sed 's/ *$/ #/' >> $DATADIR/train.char.txt
+#echo 'processing train set '$TRAIN2
+#
+#zstd -d --stdout $TRAIN2 |
+#python cleandata.py | 
+#sed 's/./& /g' | sed 's/^/# /' | sed 's/ *$/ #/' >> $DATADIR/train.char.txt
 
 echo 'processing zodiac'
 
@@ -35,7 +35,7 @@ tr 'A-Z' 'a-z' |
 tr -dc 'a-z\n' | 
 sed 's/./& /g' |
 sed 's/^/# /' |
-sed 's/ *$/ #/' >> $DATADIR/train.char.txt
+sed 's/ *$/ #/' > $DATADIR/train.char.txt
 
 cat $TRAINPILE >>$DATADIR/train.char.txt
 

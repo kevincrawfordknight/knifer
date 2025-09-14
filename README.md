@@ -7,13 +7,13 @@ This code uses a neural language model, along with beam search, to decipher text
 
 ### run.endtoend
 
-Creates train/test data, builds an LM, and deciphers a text.  It takes about 10 minutes to run.
+Creates small train/test data, builds a small LM, and deciphers a text.  It takes about 10 minutes to run.
 
 ### makedata-small
 
-Creates a small LSTM LM. Needs access to data directory ../knifer-data.
+Creates a small LSTM LM.
 
-### makedata
+### makedata-large
 
 Creates a large LSTM LM. Needs access to data directory ../knifer-data.
 
