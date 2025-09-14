@@ -1,0 +1,9 @@
+
+for i in 200 400 800 1600 3200 6400 12800 25600
+do
+  echo 'beam '$i'========================================='
+# python beam_subst5.py char_lstm.15ep.100k.pt test.ct.txt --beam $i --topk 26
+# python beam_subst6.py char_lstm.15ep.100k.pt test.ct.txt --beam $i --topk 16 --lookahead 5 --alpha 0.7 --gumbel 0.05 --prior_w 0.1 --refine 1 
+# python beam_subst8.py char_lstm.15ep.100k.pt test.ct.txt --beam $i --topk 16 --lookahead 20 --tail_logp -0.5 --prior_w 0.10 --alpha 0.7 --gumbel 0.05 --refine 1
+  python beam_subst12.py char27_lstm.pt test.ct.z13.txt --beam 500 --topk 26 --alpha 0.00 --gumbel 0.05 --prior_w 0.0 --refine 1 --nbest 20
+done

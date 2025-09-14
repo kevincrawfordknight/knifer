@@ -1,0 +1,56 @@
+
+# instructions for mounting/unmounting external data drive
+#
+# lsblk
+# sudo mkdir /mnt/jhdrive
+# sudo mount /dev/sda1 /mnt/jhdrive
+# ls /mnt/jhdrive
+# sudo umount /dev/sda1
+# udisksctl power-off -b /dev/sda1
+
+DATADIR=../knifer-data
+TEST=$DATADIR/CC-MAIN-2024-18/000_00000.jsonl.zst
+TESTEMPIRERAW=$DATADIR/test.empire.raw.txt
+TRAIN1=$DATADIR/CC-MAIN-2024-18/000_00001.jsonl.zst
+TRAIN2=$DATADIR/CC-MAIN-2024-18/000_00002.jsonl.zst
+TRAINPILE=$DATADIR/pile-small/train.large.char.txt
+TRAINZODIACRAW=$DATADIR/train.zodiac.raw
+
+echo 'processing train set '$TRAIN1
+
+zstd -d --stdout $TRAIN1 |
+python cleandata.py | 
+sed 's/./& /g' | sed 's/^/# /' | sed 's/ *$/ #/' > $DATADIR/train.char.txt
+
+echo 'processing train set '$TRAIN2
+
+zstd -d --stdout $TRAIN2 |
+python cleandata.py | 
+sed 's/./& /g' | sed 's/^/# /' | sed 's/ *$/ #/' >> $DATADIR/train.char.txt
+
+echo 'processing zodiac'
+
+cat $TRAINZODIACRAW | 
+tr 'A-Z' 'a-z' | 
+tr -dc 'a-z\n' | 
+sed 's/./& /g' |
+sed 's/^/# /' |
+sed 's/ *$/ #/' >> $DATADIR/train.char.txt
+
+cat $TRAINPILE >>$DATADIR/train.char.txt
+
+echo 'processing test set '$TEST
+
+zstd -d --stdout $TEST |
+head -100 |
+python cleandata.py |
+sed 's/./& /g' |
+sed 's/^/# /' | sed 's/ *$/ #/' > $DATADIR/test.char.txt
+
+echo 'processing test set'$TESTEMPIRE
+
+cat $TESTEMPIRERAW |
+sed 's/^/# /' |
+sed 's/ *$/ #/' |
+grep -v '# #' > $DATADIR/test.empire.txt
+

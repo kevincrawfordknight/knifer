@@ -1,0 +1,9 @@
+
+
+SIZE=512
+EPOCHS=15
+
+python lstm4.py --train train.char.txt --test test.char.txt --emb $SIZE --hidden $SIZE --layers 3 --block $SIZE --bsz 64 --lr 2e-3 --wd 0.01 --dropin 0.2 --droph 0.2 --dropout 0.2 --epochs $EPOCHS
+
+cp char_lstm.pt char27_lstm.pt
+

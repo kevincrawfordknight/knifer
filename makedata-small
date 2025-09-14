@@ -1,0 +1,20 @@
+
+# creates very small English character (a-z#) train/test sets for LM
+
+TEST=../knifer-data/CC-MAIN-2024-18/000_00000.jsonl.zst
+TRAIN=../knifer-data/CC-MAIN-2024-18/000_00001.jsonl.zst
+
+echo 'processing train set '$TRAIN
+
+zstd -d --stdout $TRAIN |
+head -10000 |
+python cleandata.py | 
+sed 's/./& /g' | sed 's/^/# /' | sed 's/ *$/ #/' > train-data/train.small.char.txt
+
+echo 'processing test set '$TEST
+
+zstd -d --stdout $TEST |
+head -100 |
+python cleandata.py |
+sed 's/./& /g' | sed 's/^/# /' | sed 's/ *$/ #/' > test-data/test.small.char.txt
+

@@ -1,0 +1,7 @@
+for s in 0 1 2 3 4 5 6 7 8 9; do
+  echo $s
+  python beam_subst8.py char_lstm.15ep.100k.pt test.ct.txt \
+    --beam 2000 --topk 26 --alpha 0.0 --prior_w 0 \
+    --gumbel 0.4 --refine 1 --seed $s > run_$s.txt
+done
+grep -H "BPC:" run_*.txt | sort -k2,2n

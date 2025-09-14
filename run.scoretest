@@ -1,0 +1,13 @@
+
+DATADIR=../knifer-data
+
+echo '911 on test.pt.z408.txt'
+python score4_lstm.py $DATADIR/char911_lstm.pt test-data/test.pt.z408.txt
+echo '913 on test.pt.z408.txt'
+python score4_lstm.py $DATADIR/char913_lstm.pt test-data/test.pt.z408.txt
+
+echo '911 on test.empire.txt'
+python score4_lstm.py $DATADIR/char911_lstm.pt $DATADIR/test.empire.txt
+echo '913 on test.empire.txt'
+python score4_lstm.py $DATADIR/char913_lstm.pt $DATADIR/test.empire.txt
+

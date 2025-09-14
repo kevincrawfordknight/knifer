@@ -1,0 +1,108 @@
+
+best LM so far:
+
+=== 1 ===
+
+200k lines of HF + 
+6m lines of PileSmall +
+180 lines of Zodiac =
+473,002,825 characters
+
+epoch 01  TRAIN bpc=2.2653 ppl=4.808   TEST bpc=2.1433 ppl=4.418
+Best TEST bpc: 2.1433
+
+epoch 15  TRAIN bpc=2.0438 ppl=4.123   TEST bpc=2.0152 ppl=4.042
+Best TEST bpc: 2.0152  (saved to pile-small/char15_lstm.pt)
+
+=== 2 ===
+
+1m lines of HF (the whole 000_00000.jsonl.zst) + 
+6m lines of PileSmall +
+180 lines of Zodiac =
+2,999,401,125 characters
+
+python lstm4.py --train train.char.txt --test test.char.txt --emb 512 --hidden 512 --layers 3 --block 512 --bsz 64   --lr 2e-3 --wd 0.01 --dropin 0.2 --droph 0.2 --dropout 0.2 --epochs 15
+
+epoch 01  TRAIN bpc=2.1522 ppl=4.445   TEST bpc=2.0746 ppl=4.212
+Best TEST bpc: 2.0746  (saved to char_lstm.pt)
+
+epoch 04  TRAIN bpc=2.0289 ppl=4.081   TEST bpc=2.0155 ppl=4.043
+Best TEST bpc: 2.0155  (saved to char_lstm.pt)
+
+epoch 14  TRAIN bpc=1.9893 ppl=3.970   TEST bpc=1.9817 ppl=3.950
+Best TEST bpc: 1.9817  (saved to char_lstm.pt)
+
+    --- resumed from weights only ---
+
+epoch 05  TRAIN bpc=1.9769 ppl=3.936   TEST bpc=1.9622 ppl=3.897
+Best TEST bpc: 1.9622  (saved to char_lstm_resumed.pt)
+
+    --- resumed from checkpoint ---
+
+epoch 12  TRAIN bpc=1.9672 ppl=3.910   TEST bpc=1.9557 ppl=3.879   [5750.2s]
+Best TEST bpc: 1.9557  (saved to char_lstm.pt)
+
+epoch 13  TRAIN bpc=1.9661 ppl=3.907   TEST bpc=1.9549 ppl=3.877   [5747.6s]
+Best TEST bpc: 1.9549  (saved to char_lstm.pt)
+
+   --- resumed from weights
+
+epoch 01  TRAIN bpc=1.9653 ppl=3.905   TEST bpc=1.9551 ppl=3.877   [5682.1s]
+Best TEST bpc: 1.9551  (saved to char911_lstm.pt)
+
+epoch 08  TRAIN bpc=1.9593 ppl=3.889   TEST bpc=1.9472 ppl=3.856   [5686.4s]
+Best TEST bpc: 1.9472  (saved to char911_lstm.pt)
+
+epoch 13  TRAIN bpc=1.9562 ppl=3.880   TEST bpc=1.9427 ppl=3.844   [5690.2s]
+Best TEST bpc: 1.9427  (saved to char911_lstm.pt)
+
+(the checkpoints are in ckpts3!)
+
+=== 2 ===
+
+1m lines of CC-MAIN-2018-34/000_00000.jsonl.zst +
+1m lines of CC-MAIN-2024-18/000_00000.jsonl.zst +
+6m lines of PileSmall +
+180 lines of Zodiac =
+5,693,278,728 characters
+
+epoch 01  TRAIN bpc=1.9093 ppl=3.756   TEST bpc=1.9759 ppl=3.934   [10810.2s] = 3hrs
+Best TEST bpc: 1.9759  (saved to char912_lstm.pt) (checkpoints in ckpts4)
+
+epoch 02  TRAIN bpc=1.9077 ppl=3.752   TEST bpc=1.9729 ppl=3.926   [10890.8s]
+Best TEST bpc: 1.9729  (saved to char912_lstm.pt)
+
+epoch 03  TRAIN bpc=1.9057 ppl=3.747   TEST bpc=1.9718 ppl=3.923   [10885.8s]
+Best TEST bpc: 1.9718  (saved to char912_lstm.pt)
+
+epoch 04  TRAIN bpc=1.9040 ppl=3.743   TEST bpc=1.9711 ppl=3.921   [10795.9s]
+Best TEST bpc: 1.9711  (saved to char912_lstm.pt)
+
+epoch 05  TRAIN bpc=1.9025 ppl=3.739   TEST bpc=1.9685 ppl=3.914   [10885.2s]
+Best TEST bpc: 1.9685  (saved to char912_lstm.pt)
+
+=== 3 ===
+
+NOTE: Changed the test set!
+
+TEST
+100 lines of CC-MAIN-2024-18/000_00000.jsonl.zst
+306,816 chars
+
+TRAIN
+1m lines of CC-MAIN-2024-18/000_00001.jsonl.zst
+1m lines of CC-MAIN-2024-18/000_00002.jsonl.zst
+6m lines of PileSmall
+180 lines of Zodiac =
+5,818,227,117 chars
+
+python lstm5.py --train train.char.txt --test test.char.txt \
+  --epochs 100 --alphabet "#abcdefghijklmnopqrstuvwxyz" \
+  --emb 512 --hidden 512 --layers 3 --block 512 --bsz 64 \
+  --lr 2e-3 --wd 0.01 --dropin 0.2 --droph 0.2 --dropout 0.2 \
+  --save char913_lstm.pt --save_dir ckpts5 --save_every 1 --full_ckpt
+
+epoch 01  TRAIN bpc=2.0055 ppl=4.015   TEST bpc=1.8997 ppl=3.731   [11099.6s]
+Best TEST bpc: 1.8997  (saved to char913_lstm.pt)
+[ckpt] saved ckpts5/char_lstm_epoch1.pt
+

@@ -1,0 +1,29 @@
+
+A=15
+B=200
+DATADIR=../knifer-data
+
+echo 'python beam_subst'$A'.py $DATADIR/char911_lstm.pt test-data/test.ct.z13.txt --topk 26 --beam '$B' --nbest 20 --dtype bf16'
+python beam_subst$A.py $DATADIR/char911_lstm.pt test-data/test.ct.z13.txt --topk 26 --beam $B --nbest 20 --dtype bf16
+
+echo 'python beam_subst'$A'.py $DATADIR/char911_lstm.pt test-data/test.ct.z13.txt --topk 26 --beam '$B' --nbest 20 --prompt "#mynameis" --dtype bf16'
+python beam_subst$A.py $DATADIR/char911_lstm.pt test-data/test.ct.z13.txt --topk 26 --beam $B --nbest 20 --prompt "#mynameis" --dtype bf16 
+
+echo 'python beam_subst'$A'.py $DATADIR/char911_lstm.pt test-data/test.ct.z13.txt --topk 26 --beam '$B' --nbest 20 --prefix "er" --dtype bf16'
+python beam_subst$A.py $DATADIR/char911_lstm.pt test-data/test.ct.z13.txt --topk 26 --beam $B --nbest 20 --prefix "er" --prompt "" --dtype bf16 
+
+echo 'python beam_subst'$A'.py $DATADIR/char911_lstm.pt test-data/test.ct.z13.txt --topk 26 --beam '$B' --nbest 20 --prefix "er" --prompt "mynameis" --dtype bf16'
+python beam_subst$A.py $DATADIR/char911_lstm.pt test-data/test.ct.z13.txt --topk 26 --beam $B --nbest 20 --prefix "er" --prompt "mynameis" --dtype bf16 
+
+echo 'python beam_subst'$A'.py $DATADIR/char911_lstm.pt test-data/test.ct.z13.txt --topk 26 --beam '$B' --nbest 20 --prefix "er" --prompt "itellyouthatmynameis" --dtype bf16'
+python beam_subst$A.py $DATADIR/char911_lstm.pt test-data/test.ct.z13.txt --topk 26 --beam $B --nbest 20 --prefix "er" --prompt "itellyouthatmynameis" --dtype bf16 
+
+echo 'python beam_subst'$A'.py $DATADIR/char911_lstm.pt test-data/test.ct.z13.txt --topk 26 --beam '$B' --nbest 20 --prefix "al" --dtype bf16'
+python beam_subst$A.py $DATADIR/char911_lstm.pt test-data/test.ct.z13.txt --topk 26 --beam $B --nbest 20 --prefix "al" --dtype bf16 
+
+echo 'python beam_subst'$A'.py $DATADIR/char911_lstm.pt test-data/test.ct.z13.txt --topk 26 --beam '$B' --nbest 20 --prefix "al" --prompt "itellyouthatmynameis" --dtype bf16'
+python beam_subst$A.py $DATADIR/char911_lstm.pt test-data/test.ct.z13.txt --topk 26 --beam $B --nbest 20 --prefix "al" --prompt "itellyouthatmynameis" --dtype bf16 
+
+echo 'python beam_subst'$A'.py $DATADIR/char911_lstm.pt test-data/test.ct.z13.txt --topk 26 --beam '$B' --nbest 20 --prefix "alf" --prompt "itellyouthatmynameis" --dtype bf16'
+python beam_subst$A.py $DATADIR/char911_lstm.pt test-data/test.ct.z13.txt --topk 26 --beam $B --nbest 20 --prefix "alf" --prompt "itellyouthatmynameis" --dtype bf16 
+
