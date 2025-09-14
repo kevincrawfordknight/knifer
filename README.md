@@ -1,7 +1,7 @@
 
 # Knifer: Deciphering with a neural language model
 
-This code using a neural language model, along with beam search, to decipher text.
+This code uses a neural language model, along with beam search, to decipher text.
 
 ## Programs and scripts
 

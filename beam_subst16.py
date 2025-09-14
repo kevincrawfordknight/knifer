@@ -288,7 +288,8 @@ def beam_decode(model: AWDCharLSTM,
                 prefix: str,
                 prompt: str,
                 p0_log: Optional[torch.Tensor],
-                char_priors: Optional[torch.Tensor]):
+                char_priors: Optional[torch.Tensor],
+                pt_debug: str = ""):
 
     device = next(model.parameters()).device
     V = len(alphabet)
@@ -297,16 +298,23 @@ def beam_decode(model: AWDCharLSTM,
 
     ct = clean_text(ct_raw, alphabet)
     if len(ct) == 0:
-        return "", list(range(V)), 0.0, ([], PTNodes())
+        return "", list(range(V)), 0.0, ([], PTNodes()), -1
 
-    # how many leading '#' to skip before applying prefix
-    lead_hash = 0
-    if HASH is not None:
-        while lead_hash < len(ct) and ct[lead_hash] == "#":
-            lead_hash += 1
+    # Clean and prepare debug plaintext
+    pt_debug_clean = clean_text(pt_debug, alphabet)
+    pt_falloff_index = -1
 
     pref = clean_text(prefix, alphabet)
     pref_len = len(pref)
+
+    # Check for prefix/ciphertext mismatch with #
+    if pref_len > 0:
+        ct_starts_with_hash = (HASH is not None and len(ct) > 0 and ct[0] == "#")
+        prefix_starts_with_hash = (len(pref) > 0 and pref[0] == "#")
+        if ct_starts_with_hash and not prefix_starts_with_hash:
+            print("WARNING: Ciphertext starts with '#' but prefix doesn't. Consider using --prefix '#...'")
+        elif not ct_starts_with_hash and prefix_starts_with_hash:
+            print("WARNING: Prefix starts with '#' but ciphertext doesn't. This will likely fail.")
 
     nodes = PTNodes()
     def add_node(parent, ch_idx): return nodes.add(parent, ch_idx)
@@ -331,9 +339,9 @@ def beam_decode(model: AWDCharLSTM,
         st = BeamState(g=g0, node=node0, c2p=c2p, p2c=p2c, h_prev=h0, last_idx=p0i, length=1)
         seed_states.append(st)
 
-    force_first = (pref_len > 0) and (0 >= lead_hash) and (0 - lead_hash < pref_len)
+    force_first = (pref_len > 0) and (0 < pref_len)
     if force_first:
-        # Force to prefix[0 - lead_hash] == prefix[0]
+        # Force to prefix[0]
         forced_pi = A2I[pref[0]]
         if HASH is not None and c0i == HASH and forced_pi != HASH:
             pass  # impossible
@@ -376,7 +384,7 @@ def beam_decode(model: AWDCharLSTM,
                     add_seed(p0i, float(base[p0i].item()), None)
 
     if not seed_states:
-        return "", list(range(V)), -1e9, ([], nodes)
+        return "", list(range(V)), -1e9, ([], nodes), -1
     seed_states.sort(key=lambda s: rank_score(s.g, s.length, alpha), reverse=True)
     states = seed_states[:beam_size]
 
@@ -387,8 +395,8 @@ def beam_decode(model: AWDCharLSTM,
         candidates: List[Tuple[float, BeamState]] = []
 
         # Are we inside the prefix window at this pos?
-        inside_prefix = (pref_len > 0) and (pos >= lead_hash) and ((pos - lead_hash) < pref_len)
-        forced_pi = A2I[pref[pos - lead_hash]] if inside_prefix else None
+        inside_prefix = (pref_len > 0) and (pos < pref_len)
+        forced_pi = A2I[pref[pos]] if inside_prefix else None
 
         for i, st in enumerate(states):
             row = row_logps[i]
@@ -459,17 +467,32 @@ def beam_decode(model: AWDCharLSTM,
         if not candidates:
             break
         candidates.sort(key=lambda x: x[0], reverse=True)
+
+        # Check if pt_debug still on beam
+        if pt_debug_clean and pt_falloff_index == -1:
+            target_len = pos + 1
+            if target_len <= len(pt_debug_clean):
+                target_prefix = pt_debug_clean[:target_len]
+                found_on_beam = False
+                for _, st in candidates[:beam_size]:
+                    pt_so_far = reconstruct(nodes, st.node, alphabet)
+                    if pt_so_far == target_prefix:
+                        found_on_beam = True
+                        break
+                if not found_on_beam:
+                    pt_falloff_index = pos
+
         states = [st for _, st in candidates[:beam_size]]
         if device.type == "cuda" and (pos % 32 == 0):
             torch.cuda.empty_cache()
 
     if not states:
-        return "", list(range(V)), -1e9, ([], nodes)
+        return "", list(range(V)), -1e9, ([], nodes), -1
 
     best = max(states, key=lambda s: s.g)
     best_pt = reconstruct(nodes, best.node, alphabet)
     c2p_full = complete_key(best.c2p, V)
-    return best_pt, c2p_full, best.g, (states, nodes)
+    return best_pt, c2p_full, best.g, (states, nodes), pt_falloff_index
 
 # ---- CLI ----
 
@@ -489,10 +512,11 @@ def main():
     ap.add_argument("--prior_w", type=float, default=0.10, help="character prior weight for NEW assignments at t>0")
     ap.add_argument("--alpha", type=float, default=0.0)
     ap.add_argument("--gumbel", type=float, default=0.0)
-    ap.add_argument("--prefix", type=str, default="")
+    ap.add_argument("--prefix", type=str, default="", help="force initial plaintext characters (include # if needed)")
     ap.add_argument("--prompt", type=str, default="")
     ap.add_argument("--nbest", type=int, default=10)
     ap.add_argument("--refine", type=int, default=1)
+    ap.add_argument("--pt", type=str, default="", help="true plaintext for debugging (include # if present)")
     ap.add_argument("--device", choices=["cuda","cpu"], default="cuda")
     ap.add_argument("--dtype", choices=["fp32","fp16","bf16"], default="fp32")
     ap.add_argument("--prior_text", type=str, default="")
@@ -538,13 +562,13 @@ def main():
     p0_log = torch.log(p0.clamp_min(1e-30)).to(device)
 
     ct = read_all(args.cipherfile)
-    best_pt, c2p_full, g_raw, pack = beam_decode(
+    best_pt, c2p_full, g_raw, pack, pt_falloff = beam_decode(
         model, ct, alphabet,
         beam_size=args.beam, micro=args.micro, topk_expand=args.topk,
         prior_w=args.prior_w, alpha=args.alpha, gumbel=args.gumbel,
         prefix=args.prefix, prompt=args.prompt,
         p0_log=p0_log if args.prompt == "" else None,
-        char_priors=p0
+        char_priors=p0, pt_debug=args.pt
     )
     states, nodes = pack
 
@@ -564,6 +588,12 @@ def main():
 
     if scored:
         print("KEY c->p:\n", "".join(alphabet[p] for p in c2p_full))
+
+    if args.pt:
+        if pt_falloff >= 0:
+            print(f"True plaintext fell off beam at position {pt_falloff}")
+        else:
+            print("True plaintext stayed on beam throughout search")
 
 if __name__ == "__main__":
     import sys, os

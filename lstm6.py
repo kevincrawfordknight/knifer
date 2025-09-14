@@ -372,7 +372,7 @@ def main():
         ebpc, eppl = evaluate(model, test_ids, args.block, args.bsz, device=device)
         dt = time.time() - t0
 
-        print(f"epoch {e:02d}  TRAIN bpc={tbpc:.4f} ppl={tppl:.3f}   TEST bpc={ebpc:.4f} ppl={eppl:.3f}   [{dt:.1f}s]")
+        print(f"epoch {e:02d}  TRAIN bpc={tbpc:.4f}   TEST bpc={ebpc:.4f}   [{dt:.1f}s]")
 
         # Save best (state_dict + alphabet + priors)
         if ebpc < best_test_bpc:

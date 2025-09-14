@@ -1,0 +1,31 @@
+
+# This script creates does run.endtoend, but for Spanish ciphers.
+
+echo '========================'
+echo '=== Building LM (5min)'
+echo '========================'
+
+time python lstm6.py \
+  --train train-data/train.small.spanish.txt --test test-data/test.small.spanish.txt \
+  --epochs 5 \
+  --emb 512 --hidden 512 --layers 3 --block 512 --bsz 64 \
+  --lr 2e-3 --wd 0.01 --dropin 0.2 --droph 0.2 --dropout 0.2 \
+  --save charsmall.pt # --save_dir ckpts.small --save_every 2 --full_ckpt
+
+echo '========================'
+echo '=== Deciphering (2min)'
+echo '========================'
+
+echo 'ciphertext =' `cat test-data/test.ct.goodnews.txt`
+
+time python beam_subst16.py charsmall.pt test-data/test.ct.spanish.txt \
+  --beam 20000 --nbest 20 \
+  --topk 26 --alpha 0.00 --gumbel 0.05 --prior_w 0.0 --refine 1 \
+  --dtype bf16
+
+echo '========================'
+echo '=== Scoring'
+echo '========================'
+
+time python score5.py charsmall.pt test-data/test.pt.spanish.txt
+

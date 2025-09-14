@@ -325,7 +325,6 @@ def main():
     print(f"\nResults:")
     print(f"Characters scored: {num_chars}")
     print(f"Bits per character: {bpc:.3f}")
-    print(f"Perplexity: {2**bpc:.3f}")
 
 
 if __name__ == "__main__":
