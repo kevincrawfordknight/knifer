@@ -3,13 +3,11 @@
 
 This code using a neural language model, along with beam search, to decipher text.
 
-## Getting started
-
-The script run.endtoend creates train/test data, builds an LM, and deciphers a text. 
-
-It takes about 10 minutes to run.
-
 ## Programs and scripts
+
+### run.endtoend
+
+Creates train/test data, builds an LM, and deciphers a text.  It takes about 10 minutes to run.
 
 ### makedata-small
 
