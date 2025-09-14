@@ -20,7 +20,7 @@ time python lstm6.py \
   --epochs 5 \
   --emb 512 --hidden 512 --layers 3 --block 512 --bsz 64 \
   --lr 2e-3 --wd 0.01 --dropin 0.2 --droph 0.2 --dropout 0.2 \
-  --save charsmall.pt --save_dir ckpts.small --save_every 2 --full_ckpt
+  --save charsmall.pt # --save_dir ckpts.small --save_every 2 --full_ckpt
 
 echo '========================'
 echo '=== Deciphering (2min)'
