@@ -49,7 +49,7 @@ python lstm5.py --train train.char.txt --test test.char.txt \
 
 ### beam_subst.py 
 
-Deciphers a ciphertext string.
+Deciphers a ciphertext string by searching for a compatible plaintext with the best score (lowest bits-per-characters according to the LM).
 
 Usage:
 
@@ -80,7 +80,7 @@ Usage (with plaintext for beam):
 
 ### score_lstm.py 
 
-Scores a plaintext.
+Scores any plaintext (candidate), in bits-per-character.
 
 Usage:
 
@@ -94,4 +94,5 @@ Usage (with prompt):
 python score4_lstm.py <LM-file> <TXT-file> --prompt "#mynameis"
 ```
 
+Note that score_lstm may return a different score on the same test set given to the lstm.py trainer. This is due to a difference in how the first character on each line is scored.
 
