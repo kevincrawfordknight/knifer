@@ -38,7 +38,7 @@ echo '=== Scoring'
 echo '========================'
 
 echo '=== scoring with small LM =================='
-time python score5.py charsmall.pt test-data/test.pt.goodnews.txt
+time python score5_lstm.py charsmall.pt test-data/test.pt.goodnews.txt
 echo '=== scoring with large LM =================='
-time python score5.py charlarge.pt test-data/test.pt.goodnews.txt
+time python score5_lstm.py charlarge.pt test-data/test.pt.goodnews.txt
 

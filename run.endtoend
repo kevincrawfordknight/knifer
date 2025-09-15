@@ -37,5 +37,5 @@ echo '========================'
 echo '=== Scoring'
 echo '========================'
 
-time python score5.py charsmall.pt test-data/test.pt.goodnews.txt
+time python score5_lstm.py charsmall.pt test-data/test.pt.goodnews.txt
 
