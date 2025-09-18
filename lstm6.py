@@ -255,10 +255,9 @@ def main():
     ap.add_argument('--droph',   type=float, default=0.2)
     ap.add_argument('--dropout', type=float, default=0.2)
 
-    ap.add_argument('--save', default='char_lstm.pt', help='path for best-model weights (state_dict only)')
-    ap.add_argument('--save_dir', default='.', help='directory for periodic full checkpoints')
-    ap.add_argument('--save_every', type=int, default=0, help='if >0, save full checkpoint every N epochs')
-    ap.add_argument('--full_ckpt', action='store_true', help='when saving periodic checkpoints, include optimizer etc.')
+    ap.add_argument('--save', default='char_lstm.pt', help='path for final unified checkpoint')
+    ap.add_argument('--ckpts', default='', help='directory for incremental checkpoints during training (optional)')
+    ap.add_argument('--ckpt_every', type=int, default=1, help='save incremental checkpoint every N epochs')
 
     ap.add_argument('--resume', type=str, default='', help='path to checkpoint (.pt) to resume from')
     ap.add_argument('--resume_strict', action='store_true', help='strict state_dict load (default: False)')
@@ -280,10 +279,16 @@ def main():
     if args.resume:
         # When resuming, load alphabet from checkpoint first
         ck = safe_torch_load(args.resume, device=device)
-        if isinstance(ck, dict) and 'vocab' in ck and isinstance(ck['vocab'], str):
-            alphabet = ck['vocab']
-            if 'char_frequencies' in ck:
-                char_frequencies = ck['char_frequencies']
+        if isinstance(ck, dict):
+            # Try new format first, then fall back to old format
+            if 'alphabet' in ck and isinstance(ck['alphabet'], str):
+                alphabet = ck['alphabet']
+                if 'char_frequencies' in ck:
+                    char_frequencies = ck['char_frequencies']
+            elif 'vocab' in ck and isinstance(ck['vocab'], str):
+                alphabet = ck['vocab']
+                if 'char_frequencies' in ck:
+                    char_frequencies = ck['char_frequencies']
 
     # If we don't have alphabet from checkpoint, detect from data
     if alphabet is None:
@@ -303,28 +308,41 @@ def main():
     if args.resume:
         ck = safe_torch_load(args.resume, device=device)
         # extract state dict
-        if isinstance(ck, dict) and ('model' in ck or 'state_dict' in ck):
-            sd = ck.get('model', ck.get('state_dict'))
+        if isinstance(ck, dict) and 'model' in ck:
+            sd = ck['model']
+        elif isinstance(ck, dict) and 'state_dict' in ck:
+            sd = ck['state_dict']
         elif isinstance(ck, dict):
             sd = ck
         else:
             raise ValueError("Unrecognized checkpoint format for --resume")
 
-        # infer shapes
-        vocab_size, emb_r, hidden_r, layers_r = _infer_shapes_from_state(sd)
+        # Try to get model config from new unified format
+        if isinstance(ck, dict) and 'model_config' in ck:
+            model_config = ck['model_config']
+            vocab_size = len(alphabet)
+            emb_r = model_config['emb']
+            hidden_r = model_config['hidden']
+            layers_r = model_config['layers']
+            tie_weights = model_config.get('tie_weights', False)
+        else:
+            # Fall back to inferring from state dict
+            vocab_size, emb_r, hidden_r, layers_r = _infer_shapes_from_state(sd)
+            tie_weights = False
 
         # Build model *matching the checkpoint*
         model = AWDCharLSTM(vocab_size=vocab_size, emb=emb_r, hidden=hidden_r, layers=layers_r,
-                            p_in=args.dropin, p_h=args.droph, p_out=args.dropout, tie_weights=False).to(device)
+                            p_in=args.dropin, p_h=args.droph, p_out=args.dropout, tie_weights=tie_weights).to(device)
         # Load weights
         model.load_state_dict(sd, strict=bool(args.resume_strict))
         print(f"[resume] loaded weights: vocab={vocab_size} emb={emb_r} hidden={hidden_r} layers={layers_r}")
 
         # Optimizer
         opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.wd)
-        if (not args.no_opt_resume) and isinstance(ck, dict) and ('opt' in ck):
+        if (not args.no_opt_resume) and isinstance(ck, dict) and ('optimizer' in ck or 'opt' in ck):
             try:
-                opt.load_state_dict(ck['opt'])
+                opt_state = ck.get('optimizer', ck.get('opt'))
+                opt.load_state_dict(opt_state)
                 print("[resume] loaded optimizer state")
             except Exception as e:
                 print(f"[resume] warning: could not load optimizer state: {e}")
@@ -333,9 +351,9 @@ def main():
         if isinstance(ck, dict) and ('epoch' in ck):
             start_epoch = int(ck['epoch']) + 1
             print(f"[resume] continuing from epoch {start_epoch}")
-        if isinstance(ck, dict) and ('best_bpc' in ck):
+        if isinstance(ck, dict) and ('best_test_bpc' in ck or 'best_bpc' in ck):
             try:
-                best_test_bpc = float(ck['best_bpc'])
+                best_test_bpc = float(ck.get('best_test_bpc', ck.get('best_bpc')))
             except Exception:
                 pass
     else:
@@ -374,31 +392,24 @@ def main():
 
         print(f"epoch {e:02d}  TRAIN bpc={tbpc:.4f}   TEST bpc={ebpc:.4f}   [{dt:.1f}s]")
 
-        # Save best (state_dict + alphabet + priors)
+        # Save best unified checkpoint
         if ebpc < best_test_bpc:
             best_test_bpc = ebpc
             torch.save({
                 'model': model.state_dict(),
-                'vocab': alphabet,
-                'char_priors': char_priors
-            }, args.save)
-            print(f"Best TEST bpc: {best_test_bpc:.4f}  (saved to {args.save})")
-
-        # Periodic full checkpoint
-        if args.save_every and (e % args.save_every == 0):
-            ckpath = os.path.join(args.save_dir, f"char_lstm_epoch{e}.pt")
-            if args.full_ckpt:
-                torch.save({
-                    'model': model.state_dict(),
-                    'opt': opt.state_dict(),
-                    'epoch': e,
-                    'best_bpc': best_test_bpc,
-                    'vocab': alphabet,
-                    'char_frequencies': char_frequencies,
-                    'char_priors': char_priors,
+                'optimizer': opt.state_dict(),
+                'epoch': e,
+                'best_test_bpc': best_test_bpc,
+                'alphabet': alphabet,
+                'char_frequencies': char_frequencies,
+                'char_priors': char_priors,
+                'model_config': {
                     'emb': model.emb_dim,
                     'hidden': model.hidden_dim,
                     'layers': model.layers,
+                    'tie_weights': getattr(model, 'tie_weights', False)
+                },
+                'training_config': {
                     'block': args.block,
                     'bsz': args.bsz,
                     'lr': args.lr,
@@ -406,26 +417,41 @@ def main():
                     'dropin': args.dropin,
                     'droph': args.droph,
                     'dropout': args.dropout,
-                }, ckpath)
-            else:
-                torch.save(model.state_dict(), ckpath)
+                }
+            }, args.save)
+            print(f"Best TEST bpc: {best_test_bpc:.4f}  (saved to {args.save})")
+
+        # Incremental checkpoint
+        if args.ckpts and (e % args.ckpt_every == 0):
+            os.makedirs(args.ckpts, exist_ok=True)
+            ckpath = os.path.join(args.ckpts, f"ckpt_epoch_{e:03d}.pt")
+            torch.save({
+                'model': model.state_dict(),
+                'optimizer': opt.state_dict(),
+                'epoch': e,
+                'best_test_bpc': best_test_bpc,
+                'alphabet': alphabet,
+                'char_frequencies': char_frequencies,
+                'char_priors': char_priors,
+                'model_config': {
+                    'emb': model.emb_dim,
+                    'hidden': model.hidden_dim,
+                    'layers': model.layers,
+                    'tie_weights': getattr(model, 'tie_weights', False)
+                },
+                'training_config': {
+                    'block': args.block,
+                    'bsz': args.bsz,
+                    'lr': args.lr,
+                    'wd': args.wd,
+                    'dropin': args.dropin,
+                    'droph': args.droph,
+                    'dropout': args.dropout,
+                }
+            }, ckpath)
             print(f"[ckpt] saved {ckpath}")
 
-    # Final save of best already handled; also save a "last.pt" full checkpoint for convenience
-    last_ckpt = os.path.join(args.save_dir, "char_lstm_last.pt")
-    torch.save({
-        'model': model.state_dict(),
-        'opt': opt.state_dict(),
-        'epoch': args.epochs,
-        'best_bpc': best_test_bpc,
-        'vocab': alphabet,
-        'char_frequencies': char_frequencies,
-        'char_priors': char_priors,
-        'emb': model.emb_dim,
-        'hidden': model.hidden_dim,
-        'layers': model.layers,
-    }, last_ckpt)
-    print(f"[done] wrote last checkpoint: {last_ckpt}")
+    print(f"[done] training complete. Best model saved to {args.save}")
 
 
 if __name__ == "__main__":

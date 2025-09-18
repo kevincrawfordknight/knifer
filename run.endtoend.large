@@ -9,7 +9,7 @@ echo '========================'
 echo '=== Making data'
 echo '========================'
 
-#./makedata-large
+./makedata-large
 
 echo '========================'
 echo '=== Building LM '
@@ -17,10 +17,12 @@ echo '========================'
 
 time python lstm6.py \
   --train ../knifer-data/train.char.txt --test ../knifer-data/test.char.txt \
-  --epochs 5 \
+  --epochs 15 \
   --emb 512 --hidden 512 --layers 3 --block 512 --bsz 64 \
   --lr 2e-3 --wd 0.01 --dropin 0.2 --droph 0.2 --dropout 0.2 \
-  --save charlarge.pt # --save_dir ckpts.small --save_every 2 --full_ckpt
+  --save charlarge6b.pt  --save_dir ckpts6b --save_every 3 --full_ckpt
+
+mv char_lstm_last.pt charlarge6b_last.pt
 
 echo '========================'
 echo '=== Deciphering '
@@ -28,7 +30,7 @@ echo '========================'
 
 echo 'ciphertext =' `cat test-data/test.ct.goodnews.txt`
 
-time python beam_subst16.py charlarge.pt test-data/test.ct.goodnews.txt \
+time python beam_subst17.py charlarge6b.pt test-data/test.ct.goodnews.txt \
   --beam 20000 --nbest 20 \
   --topk 26 --alpha 0.00 --gumbel 0.05 --prior_w 0.0 --refine 1 \
   --dtype bf16
@@ -37,8 +39,40 @@ echo '========================'
 echo '=== Scoring'
 echo '========================'
 
-echo '=== scoring with small LM =================='
+echo '=== scoring goodnews'
+echo '=== with small LM =================='
 time python score5_lstm.py charsmall.pt test-data/test.pt.goodnews.txt
-echo '=== scoring with large LM =================='
+echo '=== with large LM, 5it =================='
 time python score5_lstm.py charlarge.pt test-data/test.pt.goodnews.txt
+echo '=== with large LM, 40it =================='
+time python score5_lstm.py charlarge2.pt test-data/test.pt.goodnews.txt
+echo '=== with huge LM, 1it =================='
+time python score5_lstm.py charlarge3.pt test-data/test.pt.goodnews.txt
+echo '=== with huge LM, 1it =================='
+time python score5_lstm.py charlarge6b.pt test-data/test.pt.goodnews.txt
+
+echo '=== scoring empire'
+echo '=== with small LM =================='
+time python score5_lstm.py charsmall.pt ../knifer-data/test.empire.txt
+echo '=== with large LM, 5it =================='
+time python score5_lstm.py charlarge.pt ../knifer-data/test.empire.txt
+echo '=== with large LM, 40it =================='
+time python score5_lstm.py charlarge2.pt ../knifer-data/test.empire.txt
+echo '=== with huge LM, 1it =================='
+time python score5_lstm.py charlarge3.pt ../knifer-data/test.empire.txt
+echo '=== with huge LM, 1it =================='
+time python score5_lstm.py charlarge6b.pt ../knifer-data/test.empire.txt
+
+echo '=== scoring char'
+echo '=== with small LM =================='
+time python score5_lstm.py charsmall.pt ../knifer-data/test.char.txt
+echo '=== with large LM, 5it =================='
+time python score5_lstm.py charlarge.pt ../knifer-data/test.char.txt
+echo '=== with large LM, 40it =================='
+time python score5_lstm.py charlarge2.pt ../knifer-data/test.char.txt
+echo '=== with huge LM, 1it =================='
+time python score5_lstm.py charlarge3.pt ../knifer-data/test.char.txt
+echo '=== with huge LM, 1it =================='
+time python score5_lstm.py charlarge6b.pt ../knifer-data/test.char.txt
+
 

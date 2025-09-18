@@ -15,6 +15,10 @@ lstm v5 - Resume training: load checkpoints (model/optimizer), periodic full ckp
 
 lstm v6 - Remove English bias.
 
+lstm v7 - Simplified, fully-resumable checkpoint system: --save (final), --ckpts (incremental dir), --resume.
+
+lstm v8 - Memory-efficient streaming data loading for large datasets (>1GB); automatic fallback to legacy loading for smaller files.
+
 ## Beam Subst (deciphering)
 
 beam_subst v1 - Basic LM-scored beam search for simple substitution (top-k expand, key constraints).
@@ -38,6 +42,18 @@ beam_subst v14 - Inference dtype switch (--dtype fp32/fp16/bf16) + micro-batch k
 beam_subst v15 - Fixed --prefix hard-enforcement; consistent conditional-BPC rescoring with P0/prompt.
 
 beam_subst v16 - Remove English bias.
+
+beam_subst v17 - Added --homophonic.
+
+beam_subst v18 - Added --incremental output.
+
+beam_subst v19 - Fixed lower-casing of ciphertext. Introduced a bug.
+
+beam_subst v20 - Fixed the bug.
+
+beam_subst v21 - Unified homophonic system with --homophonic 1 as default (simple substitution).
+
+beam_subst v22 - Fixed StopIteration crash when cipher has more symbols than plaintext alphabet; added helpful error message suggesting --homophonic value; made error handling graceful (no traceback); updated --prefix, --pt, and --prompt to accept filename or quoted string.
 
 ## Score (scoring plaintexts)
 

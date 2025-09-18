@@ -24,29 +24,24 @@ Trains an LSTM LM
 Usage (fresh train):
 
 ```
-python lstm6.py \
+python lstm7.py \
   --train train-data/train.small.char.txt --test test-data/test.small.char.txt \
   --epochs 5 \
+  --save charsmall.pt --ckpts ckpts.small --ckpt_every 2 \
   --emb 512 --hidden 512 --layers 3 --block 512 --bsz 64 \
-  --lr 2e-3 --wd 0.01 --dropin 0.2 --droph 0.2 --dropout 0.2 \
-  --save charsmall.pt # --save_dir ckpts.small --save_every 2 --full_ckpt
+  --lr 2e-3 --wd 0.01 --dropin 0.2 --droph 0.2 --dropout 0.2 
 ```
 
 Usage (resume from checkpoint):
 
 ```
-python lstm6.py --train train.char.txt --test test.char.txt \
+python lstm7.py \
+  --train train.char.txt --test test.char.txt \
   --epochs 10 \
-  --resume ckpts/char_lstm_epoch8.pt --save charlarge.pt 
+  --save charsmall2.pt --resume ckpts/char_lstm_epoch8.pt
 ```
 
-Usage (resume from weights only):
-
-```
-python lstm6.py --train train.char.txt --test test.char.txt \
-  --resume char27_best.pt --resume_strict \
-  --save char27_best_resumed.pt --save_dir ckpts2 --save_every 1 --full_ckpt
-```
+In the latter case, --epochs should refer to the total epochs aimed for, which will be greater than the epochs recorded in the --resume checkpoint.
 
 ### beam_subst.py 
 
@@ -78,6 +73,8 @@ Usage (with plaintext for beam):
 ```
 --pt "string"         Reports position where true plaintext falls off the beam.
 ```
+
+A filename can be used in place of a string for these switches.
 
 ### score_lstm.py 
 

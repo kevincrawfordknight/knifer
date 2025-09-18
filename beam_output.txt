@@ -1,0 +1,131 @@
+Using alphabet from checkpoint
+Using character priors from model checkpoint
+
+=== DEBUG FIRST CHARACTER ===
+Best seed: g=-3.484695, length=1, text='#'
+Beam BPC: 5.027352, Fresh BPC: 5.027352
+Difference: 0.000000
+=== END DEBUG ===
+
+bpc=5.03 (pt bpc=5.03) #
+
+=== DEBUG: Beam contents at position 1 ===
+Beam 0: score=-10.8801 beam_bpc=7.8483 fresh_bpc=6.5980 text=#q
+  *** SIGNIFICANT DIFFERENCE: 1.2504 ***
+Beam 1: score=-10.9939 beam_bpc=7.9304 fresh_bpc=6.8346 text=#x
+  *** SIGNIFICANT DIFFERENCE: 1.0958 ***
+Beam 2: score=-11.2656 beam_bpc=8.1264 fresh_bpc=6.5336 text=#k
+  *** SIGNIFICANT DIFFERENCE: 1.5928 ***
+Beam 3: score=-11.6938 beam_bpc=8.4353 fresh_bpc=4.9643 text=#c
+  *** SIGNIFICANT DIFFERENCE: 3.4711 ***
+Beam 4: score=-11.9563 beam_bpc=8.6247 fresh_bpc=5.0401 text=#i
+  *** SIGNIFICANT DIFFERENCE: 3.5845 ***
+  *** TRUE PLAINTEXT '#t' NOT ON BEAM ***
+=== END DEBUG ===
+
+bpc=6.60 (pt bpc=4.56) #q
+*** True plaintext fell off beam at position 1 ***
+
+=== DEBUG: Beam contents at position 2 ===
+Beam 0: score=-11.3996 beam_bpc=5.4820 fresh_bpc=5.6318 text=#qu
+  *** SIGNIFICANT DIFFERENCE: 0.1498 ***
+Beam 1: score=-12.6161 beam_bpc=6.0670 fresh_bpc=4.9886 text=#ke
+  *** SIGNIFICANT DIFFERENCE: 1.0784 ***
+Beam 2: score=-12.7312 beam_bpc=6.1224 fresh_bpc=4.3791 text=#va
+  *** SIGNIFICANT DIFFERENCE: 1.7433 ***
+Beam 3: score=-12.8631 beam_bpc=6.1858 fresh_bpc=3.8130 text=#in
+  *** SIGNIFICANT DIFFERENCE: 2.3728 ***
+Beam 4: score=-13.0581 beam_bpc=6.2796 fresh_bpc=3.7537 text=#co
+  *** SIGNIFICANT DIFFERENCE: 2.5259 ***
+  *** TRUE PLAINTEXT '#th' NOT ON BEAM ***
+=== END DEBUG ===
+
+bpc=5.63 (pt bpc=3.46) #qu
+
+=== DEBUG: Beam contents at position 3 ===
+Beam 0: score=-12.1848 beam_bpc=4.3947 fresh_bpc=4.7764 text=#que
+  *** SIGNIFICANT DIFFERENCE: 0.3817 ***
+Beam 1: score=-12.6271 beam_bpc=4.5543 fresh_bpc=4.6055 text=#qua
+  *** SIGNIFICANT DIFFERENCE: 0.0513 ***
+Beam 2: score=-13.4112 beam_bpc=4.8371 fresh_bpc=4.0100 text=#key
+  *** SIGNIFICANT DIFFERENCE: 0.8271 ***
+Beam 3: score=-13.5017 beam_bpc=4.8697 fresh_bpc=3.4265 text=#var
+  *** SIGNIFICANT DIFFERENCE: 1.4432 ***
+Beam 4: score=-13.5449 beam_bpc=4.8853 fresh_bpc=4.6850 text=#quo
+  *** SIGNIFICANT DIFFERENCE: 0.2003 ***
+  *** TRUE PLAINTEXT '#the' NOT ON BEAM ***
+=== END DEBUG ===
+
+bpc=4.78 (pt bpc=2.75) #que
+bpc=4.14 (pt bpc=3.31) #ques
+bpc=3.45 (pt bpc=3.19) #quest
+bpc=4.04 (pt bpc=3.10) #questt
+bpc=2.58 (pt bpc=2.72) #ireally
+bpc=2.25 (pt bpc=2.74) #interrup
+bpc=2.02 (pt bpc=2.50) #interrupt
+bpc=2.68 (pt bpc=2.29) #quiteeasil
+bpc=2.46 (pt bpc=2.10) #quiteeasily
+bpc=2.56 #quiteeasilyw
+bpc=2.55 #quiteeasilyre
+bpc=2.44 #quiteeasilybec
+bpc=2.36 #quiteeasilybefo
+bpc=2.23 #quiteeasilybefor
+bpc=2.47 #questtimeplatform
+bpc=2.25 #quiteeasilydemonst
+bpc=2.52 #questtimeplatformse
+bpc=2.63 #questtimeplatformseq
+bpc=2.28 #acrossturkeysliquoran
+bpc=2.40 #proceedtohavejustcopie
+bpc=2.32 #closeendoftheipadsocket
+bpc=2.40 #closeendoftheipadsocketc
+bpc=2.55 #closeendoftheipadsocketce
+bpc=2.51 #closeendoftheipadsocketcer
+bpc=2.68 #closeendoftheipadsocketcexc
+bpc=2.69 #closeendoftheipadsocketcexcl
+bpc=2.80 #closeendoftheipadsocketcerclo
+bpc=2.81 #closeendoftheipadsocketcerclou
+bpc=2.87 #closeendoftheipadsocketcerclogo
+bpc=2.91 #proceedtohavejustcopieapexpromot
+bpc=2.98 #proceedtohavejustcopieapexpromoto
+bpc=3.10 #proceedtohavejustcopieapenpromoton
+bpc=3.15 #proceedtohavejustcopieapenpromotonl
+bpc=3.21 #proceedtohavejustcopieapenpromotonyp
+bpc=3.17 #proceedtohavejustcopieapexpronotoxyph
+bpc=3.18 #proceedtohavejustcopieapexpronotoxyphy
+bpc=3.28 #proceedtohavejustcopieapexpronotoxyphyp
+bpc=3.27 #proceedtohavejustcopieapexpronotoxyphypr
+bpc=3.27 #proceedtohavejustcopieapexpronotoxyphypre
+bpc=3.32 #proceedtohavemustcopieapexpronotoxyphyprem
+bpc=3.41 #proceedtohavemustcopieapexpronotoxyphypremp
+bpc=3.36 #closeendoftheipadsocketcerclobodorucfucleica
+bpc=3.39 #closeendoftheipadsocketcerclobodorucfucleicad
+bpc=3.47 #closeendoftheipadsocketcerclobodorucfucleicadh
+bpc=3.52 #closeendoftheipadsocketcerclobodorucfucleicadhm
+bpc=3.53 #closeendoftheipadsocketcerclobodorucfucleicadhyd
+bpc=3.49 #closeendoftheipadsocketcerclobodorucfucleicadhyde
+bpc=3.53 #closeendoftheipadsocketcerclobodorucfucleicadhydef
+bpc=3.61 #andissuedtopsycheidalsoaskandmdedkratransyahepweste
+bpc=3.65 #andissuedtopsycheidalsoaskandmdedkratransyahepbestex
+bpc=3.68 #andissuedtopsycheidalsoaskandvdedkratransyahepwestemb
+bpc=3.69 #proceedsontheflascopietpemprobosomgpngprefpashzsensqua
+bpc=3.77 #proceedsontheflascopietpemprobosomkpnkprefpashzsensujak
+bpc=3.78 #proceedsontheflascopietpemprobosomkpnkprefpashzsensujaks
+bpc=3.78 #proceedsontheflascopietpemprobosomkpnkprefpashzsensujaksp
+bpc=3.72 #andissuedtopsycheidalsoaskandvdedkratransyahepbestemghread
+bpc=3.65 #closeendofthegridsocketceaclojodoabcfbclegcidhwdefdupibdcom
+bpc=3.72 #andissuedtopsycheidalsoaskandvdedkratransyahepbestemghreadwa
+bpc=3.70 #closeendoftheipadsocketcerclowodorucfucleicadhqdefdbgaudcomc#
+
+Top 10 results:
+ 1. bpc= 3.703 #closeendoftheipadsocketcerclowodorucfucleicadhqdefdbgaudcomc#
+ 2. bpc= 3.713 #closeendoftheipadsocketcerclojodorucfucleicadhqdefdbgaudcomc#
+ 3. bpc= 3.719 #closeendoftheipadsocketcerclowodorucfucleicadhvdefdbgaudcomc#
+ 4. bpc= 3.722 #closeendofthegridsocketceaclojodoabcfbclegcidhwdefdupibdcomc#
+ 5. bpc= 3.724 #closeendoftheipadsocketcerclowodorucfucleicadhydefdbgaudcomc#
+ 6. bpc= 3.724 #closeendoftheipadsocketcerclowodorucfucleicadhgdefdbvaudcomc#
+ 7. bpc= 3.784 #andissuedtopsycheidalsoaskandvdedkratransyahepbestemghreadja#
+ 8. bpc= 3.787 #andissuedtopsycheidalsoaskandvdedkratransyahepgestembhreadja#
+ 9. bpc= 3.793 #andissuedtopsycheidalsoaskandvdedkratransyahepbestemjhreadga#
+10. bpc= 3.794 #andissuedtopsycheidalsoaskandvdedkratransyahepbestewghreadma#
+KEY c->p:
+ #debjvtcixfmhyawpnorsluzqgk
