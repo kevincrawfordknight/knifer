@@ -12,10 +12,10 @@ echo '========================'
 #./makedata-small
 
 echo '========================'
-echo '=== Building LM (5min)'
+echo '=== Building LM (5 min)'
 echo '========================'
 
-time python lstm6.py \
+time python lstm8.py \
   --train train-data/train.small.char.txt --test test-data/test.small.char.txt \
   --epochs 5 \
   --emb 512 --hidden 512 --layers 3 --block 512 --bsz 64 \
@@ -23,18 +23,16 @@ time python lstm6.py \
   --save charsmall.pt # --save_dir ckpts.small --save_every 2 --full_ckpt
 
 echo '========================'
-echo '=== Deciphering (2min)'
+echo '=== Deciphering (5 min)'
 echo '========================'
 
 echo 'ciphertext =' `cat test-data/test.ct.goodnews.txt`
 
-time python beam_subst16.py charsmall.pt test-data/test.ct.goodnews.txt \
-  --beam 20000 --nbest 20 \
-  --topk 26 --alpha 0.00 --gumbel 0.05 --prior_w 0.0 --refine 1 \
-  --dtype bf16
+time python beam_subst24.py charsmall.pt test-data/test.ct.goodnews.txt \
+  --beam 5000 --nbest 20 --incremental --restcost 2 --dtype bf16
 
 echo '========================'
-echo '=== Scoring'
+echo '=== Scoring     (5 sec)'
 echo '========================'
 
 time python score5_lstm.py charsmall.pt test-data/test.pt.goodnews.txt
