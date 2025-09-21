@@ -43,199 +43,66 @@ It  Train       Train      Test bpc
 90  xx  xx                    1.85 2.07
 91  xx  xx                    1.85 2.07
 
-92  xx  xxxx    11.2b         
+92  xx  xxxx    11.2b         1.85 2.07
+94  xx  xxxx      "           1.84 2.06
 
---------------------------------------
+=== EXAMPLE of --prompt working well (it usually doesn't)
 
-====================================
-Details below
-====================================
+(base) % python beam_subst24.py char916.pt test-data/test.ct.z13.txt --beam 2000 --nbest 10 --prefix "er" --dtype bf16
+Warning: No alphabet in checkpoint, falling back to #abcdefghijklmnopqrstuvwxyz
+Using character priors from model checkpoint
 
-=== 1 ===
+Top 10 results:
+ 1. bpc= 2.850 ertwasadapted#
+ 2. bpc= 2.861 eriwasanalien#
+ 3. bpc= 2.918 erthanadapted#
+ 4. bpc= 2.958 ericasanalien#
+ 5. bpc= 2.988 erihasanalien#
+ 6. bpc= 3.024 ertoanadapted#
+ 7. bpc= 3.024 erihadanalien#
+ 8. bpc= 3.046 ersmilitiaset#
+ 9. bpc= 3.059 ertialadapted#
+10. bpc= 3.070 ertinandnoted#
+KEY c->p:
+#xmateknz
+#adeprstw
+(base) % python beam_subst24.py char916.pt test-data/test.ct.z13.txt --beam 2000 --nbest 10 --prefix "er" --prompt "#mynameis" --dtype bf16
+Warning: No alphabet in checkpoint, falling back to #abcdefghijklmnopqrstuvwxyz
+Using character priors from model checkpoint
 
-200k lines of HF + 
-6m lines of PileSmall +
-180 lines of Zodiac =
-473,002,825 characters
+Top 10 results:
+ 1. bpc= 2.933 ericasanalien#
+ 2. bpc= 3.064 eriwasanalien#
+ 3. bpc= 3.082 erihasanalien#
+ 4. bpc= 3.131 ericamanalien#
+ 5. bpc= 3.195 ertoanadapted#
+ 6. bpc= 3.199 erihadanalien#
+ 7. bpc= 3.232 ericatanalien#
+ 8. bpc= 3.239 erikasanalien#
+ 9. bpc= 3.260 erisamanalien#
+10. bpc= 3.309 erikamanalien#
+KEY c->p:
+#xzantmek
+#aceilnrs
 
-epoch 01  TRAIN bpc=2.2653 ppl=4.808   TEST bpc=2.1433 ppl=4.418
-Best TEST bpc: 2.1433
+=== EXAMPLE of how --restcost 10 produces weird hypotheses
 
-epoch 15  TRAIN bpc=2.0438 ppl=4.123   TEST bpc=2.0152 ppl=4.042
-Best TEST bpc: 2.0152  (saved to pile-small/char15_lstm.pt)
+% time python beam_subst24.py char919.pt test-data/test.ct.walrus.txt --beam 20000 --nbest 10 --incremental --pt test-data/test.pt.walrus.txt --dtype bf16 --micro 32768 --prefix "ia" --restcost 10
+Warning: No alphabet in checkpoint, falling back to #abcdefghijklmnopqrstuvwxyz
+Using character priors from model checkpoint
+bpc=3.769 (pt bpc=3.769) i[nthesecond] s.g=-2.613 s.h=-8.503
+bpc=4.714 (pt bpc=4.714) ia[ndthearthr] s.g=-6.535 s.h=-13.090
+bpc=4.848 (pt bpc=4.097) iab[letoaccess] s.g=-10.082 s.h=-7.854
+bpc=4.222 (pt bpc=3.924) iabl[etoaccesst] s.g=-11.707 s.h=-7.544
+bpc=3.205 (pt bpc=3.338) ialso[changedtot] s.g=-11.109 s.h=-10.707
+bpc=3.268 (pt bpc=2.848) ialsoc[hangedtoth] s.g=-13.593 s.h=-8.371
+bpc=3.805 (pt bpc=3.185) iambrut[allystrong] s.g=-18.460 s.h=-8.319
+bpc=3.199 (pt bpc=3.084) iamyoura[nsweronthe] s.g=-17.739 s.h=-9.542
+bpc=3.372 (pt bpc=3.310) ialsochap[terhowever] s.g=-21.042 s.h=-6.723
+bpc=2.769 (pt bpc=4.020) iasyoucanp[recomplete] s.g=-19.206 s.h=-12.410
+bpc=2.744 (pt bpc=3.803) iamyouransw[erofsweete] s.g=-20.919 s.h=-15.687
+bpc=3.012 (pt bpc=3.602) iamshutalong[theonegree] s.g=-25.047 s.h=-15.843
+bpc=2.840 (pt bpc=3.679) iandspeakofre[stoftrutha] s.g=-25.596 s.h=-17.847
+bpc=3.264 (pt bpc=3.497) iadmentalfoste[rforsuchas] s.g=-31.673 s.h=-14.109
+bpc=3.024 (pt bpc=3.347) ianschuaproduce[rofdeltadi] s.g=-31.445 s.h=-19.200
 
-=== 2 ===
-
-1m lines of HF (the whole 000_00000.jsonl.zst) + 
-6m lines of PileSmall +
-180 lines of Zodiac =
-2,999,401,125 characters
-
-python lstm4.py --train train.char.txt --test test.char.txt --emb 512 --hidden 512 --layers 3 --block 512 --bsz 64   --lr 2e-3 --wd 0.01 --dropin 0.2 --droph 0.2 --dropout 0.2 --epochs 15
-
-epoch 01  TRAIN bpc=2.1522 ppl=4.445   TEST bpc=2.0746 ppl=4.212
-Best TEST bpc: 2.0746  (saved to char_lstm.pt)
-
-epoch 04  TRAIN bpc=2.0289 ppl=4.081   TEST bpc=2.0155 ppl=4.043
-Best TEST bpc: 2.0155  (saved to char_lstm.pt)
-
-epoch 14  TRAIN bpc=1.9893 ppl=3.970   TEST bpc=1.9817 ppl=3.950
-Best TEST bpc: 1.9817  (saved to char_lstm.pt)
-
-    --- resumed from weights only ---
-
-epoch 05  TRAIN bpc=1.9769 ppl=3.936   TEST bpc=1.9622 ppl=3.897
-Best TEST bpc: 1.9622  (saved to char_lstm_resumed.pt)
-
-    --- resumed from checkpoint ---
-
-epoch 12  TRAIN bpc=1.9672 ppl=3.910   TEST bpc=1.9557 ppl=3.879   [5750.2s]
-Best TEST bpc: 1.9557  (saved to char_lstm.pt)
-
-epoch 13  TRAIN bpc=1.9661 ppl=3.907   TEST bpc=1.9549 ppl=3.877   [5747.6s]
-Best TEST bpc: 1.9549  (saved to char_lstm.pt)
-
-   --- resumed from weights
-
-epoch 01  TRAIN bpc=1.9653 ppl=3.905   TEST bpc=1.9551 ppl=3.877   [5682.1s]
-Best TEST bpc: 1.9551  (saved to char911_lstm.pt)
-
-epoch 08  TRAIN bpc=1.9593 ppl=3.889   TEST bpc=1.9472 ppl=3.856   [5686.4s]
-Best TEST bpc: 1.9472  (saved to char911_lstm.pt)
-
-epoch 13  TRAIN bpc=1.9562 ppl=3.880   TEST bpc=1.9427 ppl=3.844   [5690.2s]
-Best TEST bpc: 1.9427  (saved to char911_lstm.pt)
-
-(the checkpoints are in ckpts3!)
-
-=== 2 ===
-
-1m lines of CC-MAIN-2018-34/000_00000.jsonl.zst +
-1m lines of CC-MAIN-2024-18/000_00000.jsonl.zst +
-6m lines of PileSmall +
-180 lines of Zodiac =
-5,693,278,728 characters
-
-epoch 01  TRAIN bpc=1.9093 ppl=3.756   TEST bpc=1.9759 ppl=3.934   [10810.2s] = 3hrs
-Best TEST bpc: 1.9759  (saved to char912_lstm.pt) (checkpoints in ckpts4)
-
-epoch 02  TRAIN bpc=1.9077 ppl=3.752   TEST bpc=1.9729 ppl=3.926   [10890.8s]
-Best TEST bpc: 1.9729  (saved to char912_lstm.pt)
-
-epoch 03  TRAIN bpc=1.9057 ppl=3.747   TEST bpc=1.9718 ppl=3.923   [10885.8s]
-Best TEST bpc: 1.9718  (saved to char912_lstm.pt)
-
-epoch 04  TRAIN bpc=1.9040 ppl=3.743   TEST bpc=1.9711 ppl=3.921   [10795.9s]
-Best TEST bpc: 1.9711  (saved to char912_lstm.pt)
-
-epoch 05  TRAIN bpc=1.9025 ppl=3.739   TEST bpc=1.9685 ppl=3.914   [10885.2s]
-Best TEST bpc: 1.9685  (saved to char912_lstm.pt)
-
-=== 3 ===
-
-NOTE: Changed the test set!
-
-TEST
-100 lines of CC-MAIN-2024-18/000_00000.jsonl.zst
-306,816 chars
-
-TRAIN
-6m lines of PileSmall
-180 lines of Zodiac =
-427,273,624 chars
-
-python lstm6.py \
-  --train ../knifer-data/train.char.txt --test ../knifer-data/test.char.txt \
-  --epochs 5 \
-  --emb 512 --hidden 512 --layers 3 --block 512 --bsz 64 \
-  --lr 2e-3 --wd 0.01 --dropin 0.2 --droph 0.2 --dropout 0.2 \
-  --save charlarge.pt # --save_dir ckpts.small --save_every 2 --full_ckpt
-
-epoch 01  TRAIN bpc=2.3689   TEST bpc=2.1162   [810.7s]
-Best TEST bpc: 2.1162  (saved to charlarge.pt)
-epoch 02  TRAIN bpc=2.2312   TEST bpc=2.0789   [814.5s]
-Best TEST bpc: 2.0789  (saved to charlarge.pt)
-epoch 03  TRAIN bpc=2.1984   TEST bpc=2.0606   [814.2s]
-Best TEST bpc: 2.0606  (saved to charlarge.pt)
-epoch 04  TRAIN bpc=2.1778   TEST bpc=2.0457   [814.6s]
-Best TEST bpc: 2.0457  (saved to charlarge.pt)
-epoch 05  TRAIN bpc=2.1623   TEST bpc=2.0343   [815.1s]
-Best TEST bpc: 2.0343  (saved to charlarge.pt)
-
-python lstm6.py --train ../knifer-data/train.char.txt --test ../knifer-data/test.char.txt \
-  --resume char_lstm_last.pt --epochs 35 --save charlarge2.pt
-
-epoch 06  TRAIN bpc=2.1495   TEST bpc=2.0250   [867.8s]
-Best TEST bpc: 2.0250  (saved to charlarge2.pt)
-epoch 07  TRAIN bpc=2.1387   TEST bpc=2.0173   [816.0s]
-Best TEST bpc: 2.0173  (saved to charlarge2.pt)
-epoch 08  TRAIN bpc=2.1294   TEST bpc=2.0103   [814.7s]
-Best TEST bpc: 2.0103  (saved to charlarge2.pt)
-epoch 09  TRAIN bpc=2.1215   TEST bpc=2.0046   [813.7s]
-Best TEST bpc: 2.0046  (saved to charlarge2.pt)
-epoch 10  TRAIN bpc=2.1145   TEST bpc=2.0012   [814.0s]
-Best TEST bpc: 2.0012  (saved to charlarge2.pt)
-epoch 11  TRAIN bpc=2.1086   TEST bpc=1.9950   [874.2s]
-Best TEST bpc: 1.9950  (saved to charlarge2.pt)
-epoch 12  TRAIN bpc=2.1032   TEST bpc=1.9924   [838.7s]
-Best TEST bpc: 1.9924  (saved to charlarge2.pt)
-epoch 13  TRAIN bpc=2.0983   TEST bpc=1.9895   [813.6s]
-Best TEST bpc: 1.9895  (saved to charlarge2.pt)
-epoch 14  TRAIN bpc=2.0940   TEST bpc=1.9859   [814.6s]
-Best TEST bpc: 1.9859  (saved to charlarge2.pt)
-epoch 15  TRAIN bpc=2.0901   TEST bpc=1.9831   [815.9s]
-Best TEST bpc: 1.9831  (saved to charlarge2.pt)
-epoch 16  TRAIN bpc=2.0865   TEST bpc=1.9808   [816.5s]
-Best TEST bpc: 1.9808  (saved to charlarge2.pt)
-epoch 17  TRAIN bpc=2.0831   TEST bpc=1.9782   [816.9s]
-Best TEST bpc: 1.9782  (saved to charlarge2.pt)
-epoch 18  TRAIN bpc=2.0800   TEST bpc=1.9741   [817.0s]
-Best TEST bpc: 1.9741  (saved to charlarge2.pt)
-epoch 19  TRAIN bpc=2.0771   TEST bpc=1.9727   [816.4s]
-Best TEST bpc: 1.9727  (saved to charlarge2.pt)
-epoch 20  TRAIN bpc=2.0742   TEST bpc=1.9717   [816.9s]
-Best TEST bpc: 1.9717  (saved to charlarge2.pt)
-epoch 21  TRAIN bpc=2.0717   TEST bpc=1.9693   [816.7s]
-Best TEST bpc: 1.9693  (saved to charlarge2.pt)
-epoch 22  TRAIN bpc=2.0692   TEST bpc=1.9680   [817.2s]
-Best TEST bpc: 1.9680  (saved to charlarge2.pt)
-epoch 23  TRAIN bpc=2.0668   TEST bpc=1.9656   [817.6s]
-Best TEST bpc: 1.9656  (saved to charlarge2.pt)
-epoch 24  TRAIN bpc=2.0646   TEST bpc=1.9642   [817.1s]
-Best TEST bpc: 1.9642  (saved to charlarge2.pt)
-epoch 25  TRAIN bpc=2.0627   TEST bpc=1.9634   [817.4s]
-Best TEST bpc: 1.9634  (saved to charlarge2.pt)
-epoch 26  TRAIN bpc=2.0606   TEST bpc=1.9617   [817.4s]
-Best TEST bpc: 1.9617  (saved to charlarge2.pt)
-epoch 27  TRAIN bpc=2.0589   TEST bpc=1.9603   [816.9s]
-Best TEST bpc: 1.9603  (saved to charlarge2.pt)
-epoch 28  TRAIN bpc=2.0570   TEST bpc=1.9601   [816.5s]
-Best TEST bpc: 1.9601  (saved to charlarge2.pt)
-epoch 29  TRAIN bpc=2.0557   TEST bpc=1.9591   [816.7s]
-Best TEST bpc: 1.9591  (saved to charlarge2.pt)
-epoch 30  TRAIN bpc=2.0542   TEST bpc=1.9596   [816.4s]
-epoch 31  TRAIN bpc=2.0527   TEST bpc=1.9564   [816.7s]
-Best TEST bpc: 1.9564  (saved to charlarge2.pt)
-epoch 32  TRAIN bpc=2.0514   TEST bpc=1.9566   [816.9s]
-epoch 33  TRAIN bpc=2.0500   TEST bpc=1.9554   [816.7s]
-Best TEST bpc: 1.9554  (saved to charlarge2.pt)
-epoch 34  TRAIN bpc=2.0488   TEST bpc=1.9550   [816.5s]
-Best TEST bpc: 1.9550  (saved to charlarge2.pt)
-epoch 35  TRAIN bpc=2.0477   TEST bpc=1.9527   [816.6s]
-Best TEST bpc: 1.9527  (saved to charlarge2.pt)
-[done] wrote last checkpoint: ./char_lstm_last.pt
-
-Empire test: bpc=2.212
-
-=== 4 ===
-
-TRAIN
-1m lines of CC-MAIN-2024-18/000_00001.jsonl.zst
-1m lines of CC-MAIN-2024-18/000_00002.jsonl.zst
-6m lines of PileSmall
-180 lines of Zodiac =
-5,818,227,117 chars
-
-
-
-Empire test: bpc=
