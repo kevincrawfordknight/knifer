@@ -48,8 +48,9 @@ Usage:
 ```
 python beam_subst.py charsmall.pt test-data/test.ct.goodnews.txt \
   --beam 20000 --nbest 20 \
-  --topk 26 --alpha 0.00 --gumbel 0.05 --prior_w 0.0 --refine 1 \
-  --dtype bf16
+  --incremental \
+  --dtype bf16 \
+  --topk 26 --alpha 0.00 --gumbel 0.05 --prior_w 0.0 --refine 1 
 ```
 
 Usage (with crib prefix):
