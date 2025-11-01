@@ -1,0 +1,43 @@
+
+A=24
+B=2000
+DATADIR=../knifer-data
+LM=char919.pt
+
+echo '========================='
+echo 'DECIPHERING: simple substitution'
+cat test-data/test.ct.goodnews.txt
+echo
+python beam_subst$A.py $LM test-data/test.ct.goodnews.txt \
+  --beam $B --nbest 20 --incremental --dtype bf16 
+# --pt test-data/test.pt.goodnews.txt
+
+echo '========================='
+echo 'DECIPHERING: Zodiac 13' 
+cat test-data/test.ct.z13.txt
+echo
+python beam_subst$A.py $LM test-data/test.ct.z13.txt \
+  --beam $B --nbest 20 --incremental --dtype bf16 
+
+echo '========================='
+echo 'DECIPHERING: Zodiac 13 w/prompt prefix "er"' 
+cat test-data/test.ct.z13.txt
+echo
+python beam_subst$A.py $LM test-data/test.ct.z13.txt \
+  --beam $B --nbest 20 --incremental --dtype bf16 --prefix "er"
+
+echo '========================='
+echo 'DECIPHERING: Zodiac 13 w/prefix "er" and prompt "mynameis"'
+cat test-data/test.ct.z13.txt
+echo
+python beam_subst$A.py $LM test-data/test.ct.z13.txt \
+  --beam $B --nbest 20 --incremental --dtype bf16 --prompt "mynameis" --prefix "er"
+
+echo '========================='
+echo 'DECIPHERING: Zodiac 408' 
+cat test-data/test.ct.z408.txt
+echo
+python beam_subst$A.py $LM test-data/test.ct.z408.txt \
+  --beam $B --nbest 20 --incremental --dtype bf16 --homophonic 7 \
+  --pt test-data/test.pt.z408.txt
+

@@ -5,6 +5,10 @@ This code uses a neural language model, along with beam search, to decipher text
 
 ## Programs and scripts
 
+### run.decipher
+
+Demo script deciphering some stuff with a large, trained LM.
+
 ### run.endtoend
 
 Creates small train/test data, builds a small LM, and deciphers a text.  It takes about 10 minutes to run.
@@ -38,6 +42,24 @@ python lstm.py \
 ```
 
 In the latter case, --epochs should refer to the total epochs aimed for, which will be greater than the epochs recorded in the --resume checkpoint.
+
+### score_lstm.py 
+
+Scores any plaintext (candidate), in bits-per-character.
+
+Usage:
+
+```
+python score_lstm.py <LM-file> <TXT-file>
+```
+
+Usage (with prompt):
+
+```
+python score_lstm.py <LM-file> <TXT-file> --prompt "#mynameis"
+```
+
+Note that score_lstm.py may return a different score on the same test set given to the lstm.py trainer. This is due to a difference in how the first character on each line is scored.
 
 ### beam_subst.py 
 
@@ -73,21 +95,39 @@ Usage (with plaintext for beam):
 
 A filename can be used in place of a string for these switches.
 
-### score_lstm.py 
-
-Scores any plaintext (candidate), in bits-per-character.
-
-Usage:
+### EXAMPLE of --prompt idea
 
 ```
-python score_lstm.py <LM-file> <TXT-file>
+% python beam_subst24.py char916.pt test-data/test.ct.z13.txt --beam 2000 --nbest 10 --prefix "er" --dtype bf16
+
+Top 10 results:
+ 1. bpc= 2.850 ertwasadapted#
+ 2. bpc= 2.861 eriwasanalien#
+ 3. bpc= 2.918 erthanadapted#
+ 4. bpc= 2.958 ericasanalien#
+ 5. bpc= 2.988 erihasanalien#
+ 6. bpc= 3.024 ertoanadapted#
+ 7. bpc= 3.024 erihadanalien#
+ 8. bpc= 3.046 ersmilitiaset#
+ 9. bpc= 3.059 ertialadapted#
+10. bpc= 3.070 ertinandnoted#
+KEY c->p: #xmateknz #adeprstw
 ```
 
-Usage (with prompt):
-
 ```
-python score_lstm.py <LM-file> <TXT-file> --prompt "#mynameis"
-```
+% python beam_subst24.py char916.pt test-data/test.ct.z13.txt --beam 2000 --nbest 10 --prefix "er" --prompt "#mynameis" --dtype bf16
 
-Note that score_lstm.py may return a different score on the same test set given to the lstm.py trainer. This is due to a difference in how the first character on each line is scored.
+Top 10 results:
+ 1. bpc= 2.933 ericasanalien#
+ 2. bpc= 3.064 eriwasanalien#
+ 3. bpc= 3.082 erihasanalien#
+ 4. bpc= 3.131 ericamanalien#
+ 5. bpc= 3.195 ertoanadapted#
+ 6. bpc= 3.199 erihadanalien#
+ 7. bpc= 3.232 ericatanalien#
+ 8. bpc= 3.239 erikasanalien#
+ 9. bpc= 3.260 erisamanalien#
+10. bpc= 3.309 erikamanalien#
+KEY c->p: #xzantmek #aceilnrs
+``
 

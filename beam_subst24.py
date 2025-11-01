@@ -107,7 +107,7 @@ def load_model(ckpt_path: str, device: str = "cuda"):
         print("Using alphabet from checkpoint")
     else:
         alphabet = _alphabet_for_vocab_fallback(vocab_size)
-        print(f"Warning: No alphabet in checkpoint, falling back to {alphabet}")
+#       print(f"Warning: No alphabet in checkpoint, falling back to {alphabet}")
 
     # Extract character priors if available
     char_priors = None
@@ -1038,10 +1038,10 @@ def main():
     # Determine character priors
     if args.prior_text and os.path.exists(args.prior_text):
         p0 = prior_from_text(read_all(args.prior_text), alphabet, smoothing=args.smooth)
-        print("Using character priors from", args.prior_text)
+#       print("Using character priors from", args.prior_text)
     elif saved_priors is not None and args.prior == "data":
         p0 = saved_priors
-        print("Using character priors from model checkpoint")
+#       print("Using character priors from model checkpoint")
     elif args.prior == "uniform":
         p0 = prior_uniform(alphabet)
         print("Using uniform character priors")
