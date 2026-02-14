@@ -134,7 +134,7 @@ KEY c->p: #xzantmek #aceilnrs
 
 ### Output of run.decipher with large LM
 
-## Simple substitution
+#### Simple substitution
 
 ```
 A=24
@@ -236,7 +236,7 @@ KEY c->p:
 #abcdefghiklmnopstuwxy
 ```
 
-## Homophonic substitution
+#### Homophonic substitution
 
 ```
 python beam_subst17.py charlarge2.pt test-data/test.ct.z408.txt   --beam 50000 --nbest 1 --topk 26 --alpha 0.00 --gumbel 0.05 --prior_w 0.0 --refine 1   --dtype bf16 --homophonic 7 --prefix "ilike" --pt "ilikekillingpeoplebecauseitissomuchfunitismorefunthankillingwildgameintheforrestbecausemanisthemost"
