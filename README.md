@@ -2,6 +2,7 @@
 # Knifer: Deciphering with a neural language model
 
 This code uses a neural language model, along with beam search, to decipher text.
+(Note that the 75M language models are too large to be included the github site, but are available.)
 
 ## Programs and scripts
 
@@ -95,7 +96,7 @@ Usage (with plaintext for beam):
 
 A filename can be used in place of a string for these switches.
 
-### EXAMPLE of --prompt idea
+### EXAMPLE of --prompt idea (warm up the LM with context string)
 
 ```
 % python beam_subst24.py char916.pt test-data/test.ct.z13.txt --beam 2000 --nbest 10 --prefix "er" --dtype bf16
@@ -132,6 +133,8 @@ KEY c->p: #xzantmek #aceilnrs
 ```
 
 ### Output of run.decipher with large LM
+
+## Simple substitution
 
 ```
 A=24
@@ -231,4 +234,123 @@ Top 20 results:
 KEY c->p:
 #nopqrstuvxyzabcfghjkl
 #abcdefghiklmnopstuwxy
+```
+
+## Homophonic substitution
+
+```
+python beam_subst17.py charlarge2.pt test-data/test.ct.z408.txt   --beam 50000 --nbest 1 --topk 26 --alpha 0.00 --gumbel 0.05 --prior_w 0.0 --refine 1   --dtype bf16 --homophonic 7 --prefix "ilike" --pt "ilikekillingpeoplebecauseitissomuchfunitismorefunthankillingwildgameintheforrestbecausemanisthemost"
+Using alphabet from checkpoint
+Using character priors from model checkpoint
+Homophonic mode: cipher vocab size = 55, plaintext vocab size = 27, max 7 cipher symbols per plaintext
+i
+il
+ili
+ilik
+ilike
+ilikek
+ilikeki
+ilikekin
+ilikekill
+ilikekilli
+ilikekillin
+ilikekilling
+ilikekillingt
+ilikekillingth
+ilikekillingthe
+ilikekillingthat
+ilikekillingpeopl
+ilikekillingpeople
+ilikekillingpeoplew
+ilikekillingpeoplewh
+ilikekillingpeoplewho
+ilikekillingpeoplewith
+ilikekillingpeopleinthe
+ilikekillingpeoplewhoare
+ilikekillingpeoplewhohave
+ilikekillingpeoplewiththei
+ilikekillingpeoplewiththeir
+ilikekillingpeoplewithpoliti
+ilikekillingpeoplewithpolitic
+ilikekillingpeoplewithpolitica
+ilikekillingpeoplewithpolitical
+ilikekillingpeoplewhoparticipate
+ilikekillingpeopleinthephilippine
+ilikekillingpeoplewhoarelivingthro
+ilikekillingpeoplewhoarelivingthrou
+ilikekillingpeoplewhoarelivingthroug
+ilikekillingpeoplewiththeirintentthat
+ilikekillingpeoplewithindividualitywit
+ilikekillingpeoplethetraditionalrecordi
+ilikekillingpeoplethetraditionalrecordin
+ilikekillingpeopleinthebritishthetelevisi
+ilikekillingpeopleinthebritishthetelevisio
+ilikekillingpeopleinthephilippinetelevision
+ilikekillingpeopleinthephilippinetelevisions
+ilikekillingpeopleinthephilippinetelevisionse
+ilikekillingpeopleinthephilippinetelevisionser
+ilikekillingpeopleinthephilippinetelevisionseri
+*** True plaintext fell off beam at position 46 ***
+ilikekillingpeopleinthephilippinetelevisionserie
+ilikekillingpeopleinthephilippinetelevisionseries
+ilikekillingpeopleinthephilippinetelevisionseriest
+ilikekillingpeopleinthephilippinetelevisionseriesth
+ilikekillingpeopleinthephilippinetelevisionseriesand
+
+==== beam 500k ===
+
+(base) % python beam_subst19.py charlarge_pile80_last.pt test-data/test.ct.z408.txt   --beam 500000 --nbest 1   --topk 26 --alpha 0.00 --gumbel 0.05 --prior_w 0.0 --dtype bf16 --refine 0 --prefix "ilike" --homophonic 7 --incremental --pt "ilikekillingpeoplebecauseitissomuchfunitismorefunthankillingwildgameintheforrestbecauseman" 
+Using alphabet from checkpoint
+Using character priors from model checkpoint
+bpc=3.769 (pt bpc=3.769) i
+bpc=4.466 (pt bpc=4.466) il
+bpc=4.157 (pt bpc=4.157) ili
+bpc=3.808 (pt bpc=3.808) ilik
+bpc=3.070 (pt bpc=3.070) ilike
+bpc=3.708 (pt bpc=3.708) ilikek
+bpc=3.415 (pt bpc=3.415) ilikeki
+bpc=3.163 (pt bpc=3.267) ilikekno
+bpc=2.933 (pt bpc=2.933) ilikekill
+bpc=2.729 (pt bpc=2.729) ilikekilli
+bpc=2.482 (pt bpc=2.482) ilikekillin
+bpc=2.276 (pt bpc=2.276) ilikekilling
+bpc=2.298 (pt bpc=2.524) ilikekillingt
+bpc=2.150 (pt bpc=2.478) ilikekillingth
+bpc=2.024 (pt bpc=2.337) ilikekillingthe
+bpc=2.155 (pt bpc=2.191) ilikekillingthat
+bpc=2.062 (pt bpc=2.062) ilikekillingpeopl
+bpc=1.948 (pt bpc=1.948) ilikekillingpeople
+bpc=1.967 (pt bpc=2.098) ilikekillingpeoplew
+bpc=1.914 (pt bpc=2.067) ilikekillingpeoplewh
+bpc=1.829 (pt bpc=2.059) ilikekillingpeoplewho
+bpc=1.787 (pt bpc=1.975) ilikekillingpeoplewith
+bpc=1.807 (pt bpc=1.890) ilikekillingpeopleinthe
+bpc=1.738 (pt bpc=1.812) ilikekillingpeoplewhoare
+bpc=1.686 (pt bpc=1.739) ilikekillingpeoplewhohave
+bpc=1.752 (pt bpc=1.752) ilikekillingpeoplebecausei
+bpc=1.695 (pt bpc=1.737) ilikekillingpeoplewiththeir
+bpc=1.751 (pt bpc=1.792) ilikekillingpeoplewithpoliti
+bpc=1.691 (pt bpc=1.734) ilikekillingpeoplewithpolitic
+bpc=1.643 (pt bpc=1.814) ilikekillingpeoplewithpolitica
+bpc=1.590 (pt bpc=1.804) ilikekillingpeoplewithpolitical
+bpc=1.556 (pt bpc=1.798) ilikekillingpeoplewhoparticipate
+bpc=1.622 (pt bpc=1.847) ilikekillingpeopleinthephilippine
+bpc=1.716 (pt bpc=1.793) ilikekillingpeoplewhoarelivingthro
+bpc=1.667 (pt bpc=1.742) ilikekillingpeoplewhoarelivingthrou
+bpc=1.620 (pt bpc=1.814) ilikekillingpeoplewhoarelivingthroug
+bpc=1.675 (pt bpc=1.823) ilikekillingpeoplesaidtheirinvestigat
+bpc=1.635 (pt bpc=1.791) ilikekillingpeopleperhapsitisclearthat
+bpc=1.674 (pt bpc=1.844) ilikekillingpeopleperhapsitisclearthati
+bpc=1.659 (pt bpc=1.856) ilikekillingpeoplefromreligiousproportio
+bpc=1.673 (pt bpc=1.881) ilikekillingpeopleperhapsitisclearthatiti
+bpc=1.634 (pt bpc=1.838) ilikekillingpeopleperhapsitisclearthatitis
+bpc=1.639 (pt bpc=1.909) ilikekillingpeopleinthephilistinetelevision
+bpc=1.639 (pt bpc=1.908) ilikekillingpeopleinthephilistinetelevisions
+bpc=1.642 (pt bpc=1.875) ilikekillingpeopleinthephilistinetelevisionse
+bpc=1.621 (pt bpc=1.835) ilikekillingpeopleinthephilistinetelevisionser
+bpc=1.590 (pt bpc=1.900) ilikekillingpeopleinthephilistinetelevisionseri
+bpc=1.557 (pt bpc=1.919) ilikekillingpeopleinthephilistinetelevisionserie
+bpc=1.525 (pt bpc=1.886) ilikekillingpeopleinthephilistinetelevisionseries
+*** True plaintext fell off beam at position 49 ***
+bpc=1.551 (pt bpc=1.901) ilikekillingpeopleinthephilistinetelevisionseriesa
 ```
